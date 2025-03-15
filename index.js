@@ -49,10 +49,13 @@ Bun.serve({
       }, 'localhost', 3001);
     },
     open(ws) {
-      if (ws.remoteAddress === '::ffff:127.0.0.1') host = ws;
+      if (ws.remoteAddress === '::ffff:127.0.0.1') {
+        host = ws;
+        port?.open();
+      }
     },
     close(ws, code, message) {
-      if (ws.remoteAddress === '::ffff:127.0.0.1') socket.close();
+      if (ws.remoteAddress === '::ffff:127.0.0.1') port?.close();
     },
     drain(ws) {
     }
