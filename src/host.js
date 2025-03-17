@@ -2,17 +2,13 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+import Stats from 'three/addons/libs/stats.module.js';
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // REF: https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_unreal_bloom_selective.html
-
-const BLOOM_SCENE = 1;
-
-const bloomLayer = new THREE.Layers();
-bloomLayer.set(BLOOM_SCENE);
 
 const params = {
   threshold: 0,
@@ -20,9 +16,6 @@ const params = {
   radius: 0.5,
   exposure: 1
 };
-
-const darkMaterial = new THREE.MeshBasicMaterial({ color: 'black' });
-const materials = {};
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -43,30 +36,15 @@ bloomPass.threshold = params.threshold;
 bloomPass.strength = params.strength;
 bloomPass.radius = params.radius;
 
-const bloomComposer = new EffectComposer(renderer);
-bloomComposer.renderToScreen = false;
-bloomComposer.addPass(renderScene);
-bloomComposer.addPass(bloomPass);
-
-const mixPass = new ShaderPass(
-  new THREE.ShaderMaterial({
-    uniforms: {
-      baseTexture: { value: null },
-      bloomTexture: { value: bloomComposer.renderTarget2.texture }
-    },
-    vertexShader: await (await fetch('shaders/bloom.vert')).text(),
-    fragmentShader: await (await fetch('shaders/bloom.frag')).text(),
-    defines: {}
-  }), 'baseTexture'
-);
-mixPass.needsSwap = true;
-
 const outputPass = new OutputPass();
 
-const finalComposer = new EffectComposer(renderer);
-finalComposer.addPass(renderScene);
-finalComposer.addPass(mixPass);
-finalComposer.addPass(outputPass);
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+composer.addPass(outputPass);
+
+// const stats = new Stats();
+// document.body.appendChild(stats.dom);
 
 window.addEventListener('resize', () => {
   const width = window.innerWidth;
@@ -76,72 +54,44 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
 
   renderer.setSize(width, height);
-
-  bloomComposer.setSize(width, height);
-  finalComposer.setSize(width, height);
-
-  render();
+  composer.setSize(width, height);
 });
 
-const setupScene = () => {
-  scene.traverse(disposeMaterial);
-  scene.children.length = 0;
-
-  render();
-}
-
-const disposeMaterial = obj => obj.material && obj.material.dispose();
-
 const render = () => {
-  scene.traverse(darkenNonBloomed);
-  bloomComposer.render();
-  scene.traverse(restoreMaterial);
-  // render the entire scene, then render bloom scene on top
-  finalComposer.render();
-}
-
-const darkenNonBloomed = obj => {
-  if (obj.isMesh && bloomLayer.test(obj.layers) === false) {
-    materials[obj.uuid] = obj.material;
-    obj.material = darkMaterial;
-  }
-}
-
-const restoreMaterial = obj => {
-  if (materials[obj.uuid]) {
-    obj.material = materials[obj.uuid];
-    delete materials[obj.uuid];
-  }
-}
-
-setupScene();
+  // stats.update();
+  Object.values(spheres).forEach(sphere => {
+    const x = THREE.MathUtils.lerp(sphere.position.x, sphere._TRIS_position.x, 0.5);
+    const y = THREE.MathUtils.lerp(sphere.position.y, sphere._TRIS_position.y, 0.5);
+    const z = THREE.MathUtils.lerp(sphere.position.z, sphere._TRIS_position.z, 0.5);
+    sphere.position.set(x, y, z);
+  });
+  composer.render();
+};
+renderer.setAnimationLoop(render);
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 const spheres = {};
-const factor = 0.02
 
 const socket = new WebSocket('wss://localhost:3000/data');
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data);
-
   Object.entries(data).forEach(([address, { x, y, z }]) => {
     if (address in spheres) {
-      spheres[address].position.set(x * factor, y * factor, z * factor);
+      spheres[address]._TRIS_position = { x, y, z };
     } else {
-      const geometry = new THREE.IcosahedronGeometry(1, 15);
+      const geometry = new THREE.IcosahedronGeometry(1, 1);
 
       const color = new THREE.Color();
       color.setHSL(Math.random(), 0.7, Math.random() * 0.2 + 0.05);
 
       const material = new THREE.MeshBasicMaterial({ color: color });
       const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(x * factor, y * factor, z * factor);
+      sphere.position.set(x, y, z);
+      sphere._TRIS_position = { x, y, z };
       sphere.position.normalize().multiplyScalar(Math.random() * 4.0 + 2.0);
       scene.add(sphere);
-
-      sphere.layers.enable(BLOOM_SCENE);
 
       spheres[address] = sphere;
     }
@@ -152,8 +102,6 @@ socket.addEventListener('message', event => {
     scene.remove(sphere);
     delete spheres[address];
   });
-
-  render();
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

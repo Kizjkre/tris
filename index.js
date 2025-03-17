@@ -4,6 +4,8 @@ import osc from 'osc';
 // REF: https://apple.stackexchange.com/a/20553x
 const ip = execSync('ipconfig getifaddr en0').toString().trim();
 const sources = {};
+const addresses = {};
+let i = 0;
 let host = null;
 
 const port = new osc.UDPPort({
@@ -33,7 +35,7 @@ Bun.serve({
     message(ws, message) {
       sources[ws.remoteAddress] ??= {};
 
-      const { x, y, z } = JSON.parse(message);
+      const { x, y, z, a, e } = JSON.parse(message);
       sources[ws.remoteAddress].x = x;
       sources[ws.remoteAddress].y = y;
       sources[ws.remoteAddress].z = z;
@@ -41,21 +43,38 @@ Bun.serve({
       host?.send(JSON.stringify(sources));
 
       port.send({
-        address: '/x',
-        args: [{
-          type: 'f',
-          value: x
-        }]
+        address: '/' + addresses[ws.remoteAddress],
+        args: [
+          {
+            type: 'f',
+            value: a
+          },
+          {
+            type: 'f',
+            value: e
+          }
+        ]
       }, 'localhost', 3001);
     },
     open(ws) {
       if (ws.remoteAddress === '::ffff:127.0.0.1') {
         host = ws;
         port?.open();
+      } else {
+        addresses[ws.remoteAddress] = i++;
+        port.send({
+          address: '/new',
+          args: [{
+            type: 'i',
+            value: addresses[ws.remoteAddress]
+          }]
+        }, 'localhost', 3001);
       }
     },
     close(ws, code, message) {
-      if (ws.remoteAddress === '::ffff:127.0.0.1') port?.close();
+      // if (ws.remoteAddress === '::ffff:127.0.0.1') port?.close();
+      delete sources[ws.remoteAddress];
+      host?.send(JSON.stringify(sources));
     },
     drain(ws) {
     }
