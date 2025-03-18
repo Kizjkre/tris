@@ -4,8 +4,6 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-import Stats from 'three/addons/libs/stats.module.js';
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // REF: https://github.com/mrdoob/three.js/blob/master/examples/webgl_postprocessing_unreal_bloom_selective.html
@@ -43,9 +41,6 @@ composer.addPass(renderScene);
 composer.addPass(bloomPass);
 composer.addPass(outputPass);
 
-// const stats = new Stats();
-// document.body.appendChild(stats.dom);
-
 window.addEventListener('resize', () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
@@ -58,7 +53,6 @@ window.addEventListener('resize', () => {
 });
 
 const render = () => {
-  // stats.update();
   Object.values(spheres).forEach(sphere => {
     const x = THREE.MathUtils.lerp(sphere.position.x, sphere._TRIS_position.x, 0.5);
     const y = THREE.MathUtils.lerp(sphere.position.y, sphere._TRIS_position.y, 0.5);
@@ -77,14 +71,15 @@ const socket = new WebSocket('wss://localhost:3000/data');
 
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data);
-  Object.entries(data).forEach(([address, { x, y, z }]) => {
+  Object.entries(data).forEach(([address, { x, y, z, h, s, l, v }]) => {
     if (address in spheres) {
       spheres[address]._TRIS_position = { x, y, z };
+      spheres[address].material.color.setHSL(h, s, +l + +v);
     } else {
       const geometry = new THREE.IcosahedronGeometry(1, 1);
 
       const color = new THREE.Color();
-      color.setHSL(Math.random(), 0.7, Math.random() * 0.2 + 0.05);
+      color.setHSL(h, s, l);
 
       const material = new THREE.MeshBasicMaterial({ color: color });
       const sphere = new THREE.Mesh(geometry, material);
@@ -109,5 +104,5 @@ socket.addEventListener('message', event => {
 new QRCode(document.getElementById('qr'), {
   text: 'https://' + await (await fetch('/ip')).text() + ':3000',
   colorDark: '#eee',
-  colorLight: '#000'
+  colorLight: 'transparent'
 });

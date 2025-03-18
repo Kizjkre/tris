@@ -1,0 +1,25 @@
+body, html {
+  margin: 0;
+  overflow: hidden !important;
+}
+
+button {
+  align-items: center;
+  font-size: 30vw;
+  font-family: 'Pacifico', sans-serif;
+  display: flex;
+  height: 100dvh;
+  justify-content: center;
+  width: 100vw;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+}
+
+#value {
+  background-color: #3BDB67;
+  bottom: 0;
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100vw;
+}

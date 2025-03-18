@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 134.0, 159.0, 640.0, 506.0 ],
+		"rect" : [ 134.0, 107.0, 640.0, 558.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,85 +40,63 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-5",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 125.0, 92.666669428348541, 65.0, 22.0 ],
-					"text" : "route /new"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-4",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 125.0, 143.333337604999542, 83.0, 22.0 ],
-					"text" : "poly~ polytri 3"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-3",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 125.0, 47.0, 97.0, 22.0 ],
-					"text" : "udpreceive 3001"
+					"patching_rect" : [ 37.0, 43.0, 90.0, 22.0 ],
+					"text" : "poly~ polytri 20"
 				}
 
 			}
  ],
-		"lines" : [ 			{
-				"patchline" : 				{
-					"destination" : [ "obj-5", 0 ],
-					"source" : [ "obj-3", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-4", 0 ],
-					"source" : [ "obj-5", 0 ]
-				}
-
-			}
- ],
+		"lines" : [  ],
 		"parameters" : 		{
-			"obj-4.1::obj-12" : [ "vst~[6]", "vst~[3]", 0 ],
-			"obj-4.1::obj-3" : [ "vst~[4]", "vst~", 0 ],
-			"obj-4.1::obj-9" : [ "live.gain~[1]", "live.gain~", 0 ],
-			"obj-4.2::obj-12" : [ "vst~[1]", "vst~[3]", 0 ],
-			"obj-4.2::obj-3" : [ "vst~[5]", "vst~", 0 ],
-			"obj-4.2::obj-9" : [ "live.gain~[3]", "live.gain~", 0 ],
-			"obj-4.3::obj-12" : [ "vst~[3]", "vst~[3]", 0 ],
-			"obj-4.3::obj-3" : [ "vst~[2]", "vst~", 0 ],
-			"obj-4.3::obj-9" : [ "live.gain~[2]", "live.gain~", 0 ],
+			"obj-4.10::obj-12" : [ "vst~[19]", "vst~[3]", 0 ],
+			"obj-4.10::obj-3" : [ "vst~[18]", "vst~", 0 ],
+			"obj-4.11::obj-12" : [ "vst~[20]", "vst~[3]", 0 ],
+			"obj-4.11::obj-3" : [ "vst~[21]", "vst~", 0 ],
+			"obj-4.12::obj-12" : [ "vst~[23]", "vst~[3]", 0 ],
+			"obj-4.12::obj-3" : [ "vst~[22]", "vst~", 0 ],
+			"obj-4.13::obj-12" : [ "vst~[24]", "vst~[3]", 0 ],
+			"obj-4.13::obj-3" : [ "vst~[25]", "vst~", 0 ],
+			"obj-4.14::obj-12" : [ "vst~[27]", "vst~[3]", 0 ],
+			"obj-4.14::obj-3" : [ "vst~[26]", "vst~", 0 ],
+			"obj-4.15::obj-12" : [ "vst~[28]", "vst~[3]", 0 ],
+			"obj-4.15::obj-3" : [ "vst~[29]", "vst~", 0 ],
+			"obj-4.16::obj-12" : [ "vst~[30]", "vst~[3]", 0 ],
+			"obj-4.16::obj-3" : [ "vst~[31]", "vst~", 0 ],
+			"obj-4.17::obj-12" : [ "vst~[32]", "vst~[3]", 0 ],
+			"obj-4.17::obj-3" : [ "vst~[33]", "vst~", 0 ],
+			"obj-4.18::obj-12" : [ "vst~[35]", "vst~[3]", 0 ],
+			"obj-4.18::obj-3" : [ "vst~[34]", "vst~", 0 ],
+			"obj-4.19::obj-12" : [ "vst~[36]", "vst~[3]", 0 ],
+			"obj-4.19::obj-3" : [ "vst~[37]", "vst~", 0 ],
+			"obj-4.1::obj-12" : [ "vst~[41]", "vst~[3]", 0 ],
+			"obj-4.1::obj-3" : [ "vst~[40]", "vst~", 0 ],
+			"obj-4.20::obj-12" : [ "vst~[39]", "vst~[3]", 0 ],
+			"obj-4.20::obj-3" : [ "vst~[38]", "vst~", 0 ],
+			"obj-4.2::obj-12" : [ "vst~[3]", "vst~[3]", 0 ],
+			"obj-4.2::obj-3" : [ "vst~[4]", "vst~", 0 ],
+			"obj-4.3::obj-12" : [ "vst~[1]", "vst~[3]", 0 ],
+			"obj-4.3::obj-3" : [ "vst~[5]", "vst~", 0 ],
+			"obj-4.4::obj-12" : [ "vst~[7]", "vst~[3]", 0 ],
+			"obj-4.4::obj-3" : [ "vst~[6]", "vst~", 0 ],
+			"obj-4.5::obj-12" : [ "vst~[8]", "vst~[3]", 0 ],
+			"obj-4.5::obj-3" : [ "vst~[9]", "vst~", 0 ],
+			"obj-4.6::obj-12" : [ "vst~[11]", "vst~[3]", 0 ],
+			"obj-4.6::obj-3" : [ "vst~[10]", "vst~", 0 ],
+			"obj-4.7::obj-12" : [ "vst~[12]", "vst~[3]", 0 ],
+			"obj-4.7::obj-3" : [ "vst~[13]", "vst~", 0 ],
+			"obj-4.8::obj-12" : [ "vst~[14]", "vst~[3]", 0 ],
+			"obj-4.8::obj-3" : [ "vst~[15]", "vst~", 0 ],
+			"obj-4.9::obj-12" : [ "vst~[17]", "vst~[3]", 0 ],
+			"obj-4.9::obj-3" : [ "vst~[16]", "vst~", 0 ],
 			"parameterbanks" : 			{
 				"0" : 				{
 					"index" : 0,
 					"name" : "",
 					"parameters" : [ "-", "-", "-", "-", "-", "-", "-", "-" ]
-				}
-
-			}
-,
-			"parameter_overrides" : 			{
-				"obj-4.1::obj-9" : 				{
-					"parameter_longname" : "live.gain~[1]"
-				}
-,
-				"obj-4.2::obj-9" : 				{
-					"parameter_longname" : "live.gain~[3]"
-				}
-,
-				"obj-4.3::obj-9" : 				{
-					"parameter_longname" : "live.gain~[2]"
 				}
 
 			}

@@ -35,26 +35,42 @@ Bun.serve({
     message(ws, message) {
       sources[ws.remoteAddress] ??= {};
 
-      const { x, y, z, a, e } = JSON.parse(message);
-      sources[ws.remoteAddress].x = x;
-      sources[ws.remoteAddress].y = y;
-      sources[ws.remoteAddress].z = z;
+      message = JSON.parse(message);
+      switch (message.t) {
+        case 'c':
+          const { h, s, l } = message;
+          sources[ws.remoteAddress].h = h;
+          sources[ws.remoteAddress].s = s;
+          sources[ws.remoteAddress].l = l;
+          break;
+        case 'd':
+          const { x, y, z, a, e, v } = message;
+          sources[ws.remoteAddress].x = x;
+          sources[ws.remoteAddress].y = y;
+          sources[ws.remoteAddress].z = z;
+          sources[ws.remoteAddress].v = v;
 
-      host?.send(JSON.stringify(sources));
+          host?.send(JSON.stringify(sources));
 
-      port.send({
-        address: '/' + addresses[ws.remoteAddress],
-        args: [
-          {
-            type: 'f',
-            value: a
-          },
-          {
-            type: 'f',
-            value: e
-          }
-        ]
-      }, 'localhost', 3001);
+          port.send({
+            address: '/' + addresses[ws.remoteAddress],
+            args: [
+              {
+                type: 'f',
+                value: a
+              },
+              {
+                type: 'f',
+                value: e
+              },
+              {
+                type: 'f',
+                value: v
+              }
+            ]
+          }, 'localhost', 3001);
+          break;
+      }
     },
     open(ws) {
       if (ws.remoteAddress === '::ffff:127.0.0.1') {
@@ -75,6 +91,13 @@ Bun.serve({
       // if (ws.remoteAddress === '::ffff:127.0.0.1') port?.close();
       delete sources[ws.remoteAddress];
       host?.send(JSON.stringify(sources));
+      port.send({
+        address: '/delete',
+        args: [{
+          type: 'i',
+          value: addresses[ws.remoteAddress]
+        }]
+      }, 'localhost', 3001);
     },
     drain(ws) {
     }
