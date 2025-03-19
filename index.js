@@ -76,7 +76,8 @@ Bun.serve({
         host = ws;
         port?.open();
       } else {
-        const free = Array(20).fill().map((_, i) => i + 1).filter(i => !Object.values(addresses).includes(i));
+        const free = Array(30).fill().map((_, i) => i + 1).filter(i => !Object.values(addresses).includes(i));
+        if (free.length === 0) return;
         addresses[ws.remoteAddress] = free[0];
         port.send({
           address: '/new',

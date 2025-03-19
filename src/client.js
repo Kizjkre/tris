@@ -38,12 +38,14 @@ const start = async () => {
       d.x = THREE.MathUtils.clamp(d.x, -11, 11);
       d.y = THREE.MathUtils.clamp(d.y, -5, 5);
 
+      const azimuth = event.alpha < 180 ? event.alpha + 180 : event.alpha - 180;
+
       socket.send(JSON.stringify({
         t: 'd', // NOTE: type: 'data'
         x: -d.x.toFixed(2),
         y: d.y.toFixed(2),
         z: d.z.toFixed(2),
-        a: event.alpha.toFixed(2), // NOTE: Azimuth
+        a: azimuth.toFixed(2), // NOTE: Azimuth
         e: event.beta.toFixed(2), // NOTE: Elevation
         v: value.toFixed(2) // NOTE: Value
       }));
