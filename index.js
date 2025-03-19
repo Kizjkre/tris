@@ -76,7 +76,7 @@ Bun.serve({
         host = ws;
         port?.open();
       } else {
-        const free = Array(20).fill().filter((_, i) => !Object.values(addresses).includes(i));
+        const free = Array(20).fill().map((_, i) => i + 1).filter(i => !Object.values(addresses).includes(i));
         addresses[ws.remoteAddress] = free[0];
         port.send({
           address: '/new',
@@ -98,6 +98,7 @@ Bun.serve({
           value: addresses[ws.remoteAddress]
         }]
       }, 'localhost', 3001);
+      delete addresses[ws.remoteAddress];
     },
     drain(ws) {
     }
