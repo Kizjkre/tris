@@ -54,9 +54,9 @@ window.addEventListener('resize', () => {
 
 const render = () => {
   Object.values(spheres).forEach(sphere => {
-    const x = THREE.MathUtils.lerp(sphere.position.x, sphere._TRIS_position.x, 0.5);
-    const y = THREE.MathUtils.lerp(sphere.position.y, sphere._TRIS_position.y, 0.5);
-    const z = THREE.MathUtils.lerp(sphere.position.z, sphere._TRIS_position.z, 0.5);
+    const x = THREE.MathUtils.lerp(sphere.position.x || 0, sphere._TRIS_position.x, 0.5);
+    const y = THREE.MathUtils.lerp(sphere.position.y || 0, sphere._TRIS_position.y, 0.5);
+    const z = THREE.MathUtils.lerp(sphere.position.z || 0, sphere._TRIS_position.z, 0.5);
     sphere.position.set(x, y, z);
   });
   composer.render();
@@ -69,6 +69,8 @@ const spheres = {};
 
 const socket = new WebSocket('wss://localhost:3000/data');
 
+const geometry = new THREE.IcosahedronGeometry(1, 1);
+
 socket.addEventListener('message', event => {
   const data = JSON.parse(event.data);
   Object.entries(data).forEach(([address, { x, y, z, h, s, l, v }]) => {
@@ -76,12 +78,10 @@ socket.addEventListener('message', event => {
       spheres[address]._TRIS_position = { x, y, z };
       spheres[address].material.color.setHSL(h, s, +l + +v);
     } else {
-      const geometry = new THREE.IcosahedronGeometry(1, 1);
-
       const color = new THREE.Color();
       color.setHSL(h, s, l);
 
-      const material = new THREE.MeshBasicMaterial({ color: color });
+      const material = new THREE.MeshBasicMaterial({ color });
       const sphere = new THREE.Mesh(geometry, material);
       sphere.position.set(x, y, z);
       sphere._TRIS_position = { x, y, z };

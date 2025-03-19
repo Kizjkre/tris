@@ -5,7 +5,6 @@ import osc from 'osc';
 const ip = execSync('ipconfig getifaddr en0').toString().trim();
 const sources = {};
 const addresses = {};
-let i = 0;
 let host = null;
 
 const port = new osc.UDPPort({
@@ -73,11 +72,12 @@ Bun.serve({
       }
     },
     open(ws) {
-      if (ws.remoteAddress === '::ffff:127.0.0.1') {
+      if (ws.remoteAddress === '::ffff:127.0.0.1' || ws.remoteAddress === '::1') {
         host = ws;
         port?.open();
       } else {
-        addresses[ws.remoteAddress] = i++;
+        const free = Array(20).fill().filter((_, i) => !Object.values(addresses).includes(i));
+        addresses[ws.remoteAddress] = free[0];
         port.send({
           address: '/new',
           args: [{
